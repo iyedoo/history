@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حفظ الأحداث التاريخية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .question {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .answer {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: clamp(1rem, 3.5vw, 1.2rem);
+            color: #666;
+            margin-bottom: 40px;
+            user-select: none;
+        }
+        
+        .answer:hover {
+            background: #e0e0e0;
+        }
+        
+        .answer.revealed {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: clamp(1rem, 3vw, 1.1rem);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .btn-nav {
+            background: #667eea;
+            color: white;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .btn-nav:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-nav:active {
+            transform: translateY(0);
+        }
+        
+        .counter {
+            color: white;
+            text-align: center;
+            margin-top: 20px;
+            font-size: clamp(0.9rem, 3vw, 1rem);
+        }
+        
+        @media (max-width: 480px) {
+            .card {
+                padding: 30px 20px;
+            }
+            
+            button {
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">        
+        <div class="card">
+            <div class="question" id="question"></div>
+            <div class="answer" id="answer" onclick="reveal()">اضغط للكشف</div>
+            
+            <div class="controls">
+                <button class="btn-nav" onclick="previous()">← السابق</button>
+                <button class="btn-nav" onclick="next()">التالي →</button>
+            </div>
+        </div>
+        
+        <div class="counter" id="counter"></div>
+    </div>
+
+    <script>
+const events = [
+  {
+    "event": "مؤتمر يالطا",
+    "date": "4-11 فيفري 1945"
+  },
+  {
+    "event": "مؤتمر بوتسدام",
+    "date": "17جويلية-2أوت1945"
+  },
+  {
+    "event": "قنبلة هيروشيما",
+    "date": "6 أوت 1945"
+  },
+  {
+    "event": "قنبلة ناغازاكي",
+    "date": "9 أوت 1945"
+  },
+  {
+    "event": "تأسيس هيئة الأمم المتحدة",
+    "date": "24 أكتوبر 1945"
+  },
+  {
+    "event": "الإعلان عن مبدأ ترومان",
+    "date": "12 مارس 1947"
+  },
+  {
+    "event": "إعلان مشروع مارشال",
+    "date": "5 جوان 1947"
+  },
+  {
+    "event": "إعلان مبدأ جنادوف",
+    "date": "22 سبتمبر 1947"
+  },
+  {
+    "event": "تأسيس مكتب الكومنفورم",
+    "date": "6 أكتوبر 1947"
+  },
+  {
+    "event": "تأسيس الكوميكون",
+    "date": "25 جانفي 1949"
+  },
+  {
+    "event": "اجتماع لندن وتأسيس حكومة رأسمالية في بون الألمانية",
+    "date": "3 جوان 1948"
+  },
+  {
+    "event": "حصار السوفيات لبرلين",
+    "date": "23 جوان 1948"
+  },
+  {
+    "event": "إنشاء الجسر الجوي إلى برلين",
+    "date": "25 جوان 1948"
+  },
+  {
+    "event": "رفع الحصار عن برلين",
+    "date": "12 ماي 1949"
+  },
+  {
+    "event": "تأسيس ألمانيا الغربية",
+    "date": "8 ماي 1949"
+  },
+  {
+    "event": "تأسيس ألمانيا الشرقية",
+    "date": "7 أكتوبر 1949"
+  },
+  {
+    "event": "تأسيس حلف الناتو",
+    "date": "4 أفريل 1949"
+  },
+  {
+    "event": "نجاح الثورة الشيوعية الصينية",
+    "date": "1 أكتوبر 1949"
+  },
+  {
+    "event": "اندلاع الحرب الأهلية الكورية",
+    "date": "25 جوان 1950"
+  },
+  {
+    "event": "تأسيس حلف الأنزيس",
+    "date": "1 سبتمبر 1951"
+  },
+  {
+    "event": "وفاة ستالين",
+    "date": "5 مارس 1953"
+  },
+  {
+    "event": "انتهاء الحرب الأهلية الكورية",
+    "date": "27 جويلية 1953"
+  },
+  {
+    "event": "تأسيس حلف شرق وجنوب شرق اسيا",
+    "date": "8 سبتمبر 1954"
+  },
+  {
+    "event": "تأسيس حلف بغداد",
+    "date": "24 فيفري 1955"
+  },
+  {
+    "event": "مؤتمر باندونغ",
+    "date": "18-24 أفريل 1955"
+  },
+  {
+    "event": "تأسيس حلف وارسو",
+    "date": "14 ماي 1955"
+  },
+  {
+    "event": "اِعتراف السوفيات بألمانيا الغربية",
+    "date": "5 ماي 1955"
+  },
+  {
+    "event": "تبني خروتشوف لسياسة التعايش السلمي",
+    "date": "14 فيفري 1956"
+  },
+  {
+    "event": "حل مكتب الكومنفورم",
+    "date": "17 أفريل 1956"
+  },
+  {
+    "event": "العدوان الثلاثي على مصر",
+    "date": "29 أكتوبر 1956"
+  },
+  {
+    "event": "تهديد السوفيات باستعمال السلاح النووي ضد دول العدوان الثلاثي",
+    "date": "5 نوفمبر 1956"
+  },
+  {
+    "event": "إعلان مشروع أيزنهاور",
+    "date": "5 جانفي 1957"
+  },
+  {
+    "event": "بناء جدار برلين",
+    "date": "13 أوت 1961"
+  },
+  {
+    "event": "تأسيس حركة عدم الانحياز",
+    "date": "1-6 سبتمبر 1961"
+  },
+  {
+    "event": "زيارة خروتشوف لواشنطن",
+    "date": "15-18 سبتمبر 1959"
+  },
+  {
+    "event": "فرض الحصار الاقتصادي الأمريكي على كوبا",
+    "date": "7 فيفري 1962"
+  },
+  {
+    "event": "فرض الحصار العسكري الأمريكي على كوبا",
+    "date": "22 أكتوبر 1962"
+  },
+  {
+    "event": "سحب الصواريخ السوفياتية من كوبا وانتهاء الأزمة الكوبية",
+    "date": "28 أكتوبر 1962"
+  },
+  {
+    "event": "إنشاء الخط الهاتفي الأحمر",
+    "date": "20 جوان 1963"
+  },
+  {
+    "event": "توقيع اتفاقية سالت الأولى",
+    "date": "26 ماي 1972"
+  },
+  {
+    "event": "توقيع اتفاقية سالت الثانية",
+    "date": "18 جوان 1979"
+  },
+  {
+    "event": "المؤتمر الرابع لحركة عدم الانحياز بالجزائر",
+    "date": "5-9 سبتمبر 1973"
+  },
+  {
+    "event": "التدخل العسكري السوفييتي في أفغانستان",
+    "date": "27 ديسمبر 1979"
+  },
+  {
+    "event": "مؤتمر مالطا والإعلان عن زوال الثنائية القطبية",
+    "date": "3-4 ديسمبر 1989"
+  },
+  {
+    "event": "تحطيم جدار برلين",
+    "date": "9 نوفمبر 1989"
+  },
+  {
+    "event": "3 أكتوبر 1990",
+    "date": "توحيد الألمانيتين"
+  },
+  {
+    "event": "مؤتمر باريس وإعلان نهاية الحرب الباردة",
+    "date": "19-21 نوفمبر 1990"
+  },
+  {
+    "event": "حل الكوميكون",
+    "date": "28 جوان 1991"
+  },
+  {
+    "event": "حل حلف وارسو",
+    "date": "1 جويلية 1991"
+  },
+  {
+    "event": "حل الحزب الشيوعي السوفياتي",
+    "date": "5 سبتمبر 1991"
+  },
+  {
+    "event": "مؤتمر الما اتا وزوال الاتحاد السوفياتي وظهور الدول المستقلة",
+    "date": "21 ديسمبر 1991"
+  },
+  {
+    "event": "استقالة غورباتشوف وتأسيس روسيا الاتحادية",
+    "date": "25 ديسمبر 1991"
+  }
+];
+
+        let shuffled = [];
+        let currentIndex = 0;
+        let isRevealed = false;
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function init() {
+            shuffled = shuffleArray(events).map(item => ({
+                ...item,
+                showDate: Math.random() < 0.5
+            }));
+            currentIndex = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            isRevealed = false;
+            const current = shuffled[currentIndex];
+            const questionEl = document.getElementById('question');
+            const answerEl = document.getElementById('answer');
+            
+            if (current.showDate) {
+                questionEl.textContent = current.date;
+                answerEl.textContent = 'اضغط للكشف';
+                answerEl.dataset.answer = current.event;
+            } else {
+                questionEl.textContent = current.event;
+                answerEl.textContent = 'اضغط للكشف';
+                answerEl.dataset.answer = current.date;
+            }
+            
+            answerEl.classList.remove('revealed');
+            updateCounter();
+        }
+
+        function reveal() {
+            const answerEl = document.getElementById('answer');
+            if (!isRevealed) {
+                answerEl.textContent = answerEl.dataset.answer;
+                answerEl.classList.add('revealed');
+                isRevealed = true;
+            }
+        }
+
+        function next() {
+            currentIndex = (currentIndex + 1) % shuffled.length;
+            showQuestion();
+        }
+
+        function previous() {
+            currentIndex = (currentIndex - 1 + shuffled.length) % shuffled.length;
+            showQuestion();
+        }
+
+        function updateCounter() {
+            document.getElementById('counter').textContent = 
+                `${currentIndex + 1} / ${shuffled.length}`;
+        }
+
+        init();
+    </script>
+</body>
+</html>
