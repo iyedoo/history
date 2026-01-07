@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حفظ الأحداث التاريخية</title>
+    <title>MemoBAC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,8 +13,8 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Tajawal', sans-serif;
+            background: #000;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -23,101 +24,75 @@
         
         .container {
             width: 100%;
-            max-width: 500px;
-        }
-        
-        h1 {
-            color: white;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: clamp(1.5rem, 5vw, 2rem);
+            max-width: 600px;
         }
         
         .card {
-            background: white;
+            background: #fff;
             border-radius: 20px;
-            padding: 40px 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 50px 40px;
             text-align: center;
         }
         
         .question {
-            font-size: clamp(1.2rem, 4vw, 1.5rem);
-            color: #333;
-            margin-bottom: 30px;
-            line-height: 1.6;
+            font-size: clamp(1.3rem, 5vw, 1.8rem);
+            color: #222;
+            margin-bottom: 40px;
+            line-height: 1.7;
+            font-weight: 400;
         }
         
         .answer {
-            display: inline-block;
-            background: #f0f0f0;
-            padding: 15px 25px;
-            border-radius: 10px;
+            background: #f5f5f5;
+            padding: 20px 30px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: clamp(1rem, 3.5vw, 1.2rem);
-            color: #666;
-            margin-bottom: 40px;
+            font-size: clamp(1.1rem, 4vw, 1.4rem);
+            color: #888;
+            margin-bottom: 50px;
             user-select: none;
+            transition: all 0.2s;
         }
         
-        .answer:hover {
-            background: #e0e0e0;
+        .answer:active {
+            transform: scale(0.98);
         }
         
         .answer.revealed {
-            background: #667eea;
-            color: white;
-            font-weight: bold;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
+            color: #000;
+            font-weight: 700;
+            background: #f0f0f0;
         }
         
         button {
-            padding: 15px 30px;
-            font-size: clamp(1rem, 3vw, 1.1rem);
+            width: 100%;
+            padding: 18px;
+            font-size: clamp(1.1rem, 4vw, 1.3rem);
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
+            background: #000;
+            color: #fff;
+            transition: all 0.2s;
         }
         
-        .btn-nav {
-            background: #667eea;
-            color: white;
-            flex: 1;
-            min-width: 120px;
-        }
-        
-        .btn-nav:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
-        }
-        
-        .btn-nav:active {
-            transform: translateY(0);
+        button:active {
+            transform: scale(0.98);
         }
         
         .counter {
-            color: white;
+            color: #fff;
             text-align: center;
-            margin-top: 20px;
-            font-size: clamp(0.9rem, 3vw, 1rem);
+            margin-top: 25px;
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            font-weight: 400;
         }
         
         @media (max-width: 480px) {
             .card {
-                padding: 30px 20px;
-            }
-            
-            button {
-                padding: 12px 20px;
+                padding: 40px 25px;
             }
         }
     </style>
@@ -127,11 +102,7 @@
         <div class="card">
             <div class="question" id="question"></div>
             <div class="answer" id="answer" onclick="reveal()">اضغط للكشف</div>
-            
-            <div class="controls">
-                <button class="btn-nav" onclick="previous()">← السابق</button>
-                <button class="btn-nav" onclick="next()">التالي →</button>
-            </div>
+            <button onclick="next()">التالي</button>
         </div>
         
         <div class="counter" id="counter"></div>
@@ -320,8 +291,8 @@ const events = [
     "date": "9 نوفمبر 1989"
   },
   {
-    "event": "3 أكتوبر 1990",
-    "date": "توحيد الألمانيتين"
+    "event": "توحيد الألمانيتين",
+    "date": "3 أكتوبر 1990"
   },
   {
     "event": "مؤتمر باريس وإعلان نهاية الحرب الباردة",
@@ -402,11 +373,6 @@ const events = [
 
         function next() {
             currentIndex = (currentIndex + 1) % shuffled.length;
-            showQuestion();
-        }
-
-        function previous() {
-            currentIndex = (currentIndex - 1 + shuffled.length) % shuffled.length;
             showQuestion();
         }
 
