@@ -317,14 +317,30 @@ const events = [
   {
     "event": "استقالة غورباتشوف وتأسيس روسيا الاتحادية",
     "date": "25 ديسمبر 1991"
+  },
+  {
+    "event": "اتفاقية بروتن وودز",
+    "date": "22 جويلية 1944"
+  },
+  {
+    "event": "اعتراف و.م.أ بالصين / زيارة نيكسون للصين",
+    "date": "1971"
+  },
+  {
+    "event": "وثيقة هلنسكي",
+    "date": "1975"
+  },
+  {
+    "event": "قمة جنيف بين خرتشوف وأيزنهاور",
+    "date": "1955"
   }
 ];
 
         let shuffled = [];
-        let currentIndex = 0;
-        let isRevealed = false;
+        let curr = 0;
+        let revealed = false;
 
-        function shuffleArray(array) {
+        function shuffle(array) {
             const arr = [...array];
             for (let i = arr.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -334,54 +350,54 @@ const events = [
         }
 
         function init() {
-            shuffled = shuffleArray(events).map(item => ({
+            shuffled = shuffle(events).map(item => ({
                 ...item,
                 showDate: Math.random() < 0.5
             }));
-            currentIndex = 0;
-            showQuestion();
+            curr = 0;
+            show();
         }
 
-        function showQuestion() {
-            isRevealed = false;
-            const current = shuffled[currentIndex];
-            const questionEl = document.getElementById('question');
-            const answerEl = document.getElementById('answer');
+        function show() {
+            revealed = false;
+            const current = shuffled[curr];
+            const q = document.getElementById('question');
+            const a = document.getElementById('answer');
             
             if (current.showDate) {
-                questionEl.textContent = current.date;
-                answerEl.textContent = 'اضغط للكشف';
-                answerEl.dataset.answer = current.event;
+                q.textContent = current.date;
+                a.textContent = 'اضغط للكشف';
+                a.dataset.answer = current.event;
             } else {
-                questionEl.textContent = current.event;
-                answerEl.textContent = 'اضغط للكشف';
-                answerEl.dataset.answer = current.date;
+                q.textContent = current.event;
+                a.textContent = 'اضغط للكشف';
+                a.dataset.answer = current.date;
             }
             
-            answerEl.classList.remove('revealed');
-            updateCounter();
+            a.classList.remove('revealed');
+            update();
         }
 
         function reveal() {
-            const answerEl = document.getElementById('answer');
-            if (!isRevealed) {
-                answerEl.textContent = answerEl.dataset.answer;
-                answerEl.classList.add('revealed');
-                isRevealed = true;
+            const a = document.getElementById('answer');
+            if (!revealed) {
+                a.textContent = a.dataset.answer;
+                a.classList.add('revealed');
+                revealed = true;
             }
         }
 
         function next() {
-            currentIndex = (currentIndex + 1) % shuffled.length;
-            showQuestion();
+            curr = (curr + 1) % shuffled.length;
+            show();
         }
 
-        function updateCounter() {
-            document.getElementById('counter').textContent = 
-                `${currentIndex + 1} / ${shuffled.length}`;
+        function update() {
+            document.getElementById('counter').textContent = `${curr + 1} / ${shuffled.length}`;
         }
 
         init();
     </script>
 </body>
 </html>
+
